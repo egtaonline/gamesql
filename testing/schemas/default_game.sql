@@ -1,3 +1,5 @@
+CREATE EXTENSION IF NOT EXISTS hstore;
+CREATE EXTENSION IF NOT EXISTS intarray;
 DROP TABLE IF EXISTS symmetry_groups;
 DROP TABLE IF EXISTS partial_profiles;
 DROP TABLE IF EXISTS profiles;
@@ -21,21 +23,21 @@ CREATE TABLE strategies (
 
 CREATE TABLE role_assignments (
     role_assignment_id serial PRIMARY KEY,
-    role_assignment text
---  UNIQUE
+    role_ids integer[],
+    role_counts integer[]
+--  , CONSTRAINT r_uniqueness UNIQUE(role_ids, role_counts)
     );
 
 CREATE TABLE profiles (
     profile_id serial PRIMARY KEY,
     role_assignment_id integer 
 --  REFERENCES role_assignments(role_assignment_id)
-    , num_strategies_in_profile integer
 --  , CHECK (num_strategies_in_profile > 0)
     );
 
 CREATE TABLE partial_profiles (
     partial_profile_id serial PRIMARY KEY,
-    partial_profile text
+    partial_profile hstore
 --  UNIQUE
     );
 
@@ -48,6 +50,7 @@ CREATE TABLE symmetry_groups (
 --  REFERENCES strategies(strategy_id)
     , partial_profile_id integer
 --  REFERENCES partial_profiles(partial_profile_id)
+    , num_strategies_in_profile integer
     , num_players integer,
     payoff float
 --  , CHECK (num_players > 0),
