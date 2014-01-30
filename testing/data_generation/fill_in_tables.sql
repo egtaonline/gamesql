@@ -1,0 +1,1 @@
+INSERT INTO roles (name) SELECT 'Role' || t FROM generate_series(1,6)
